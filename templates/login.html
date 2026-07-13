@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>惠农网数据分析系统 - 登录</title>
+  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-primary">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <div class="row">
+              <div class="col-lg-6 d-none d-lg-block bg-login-image" style="background-image:url('/static/img/2.png')"></div>
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">农产品销售分析系统</h1>
+                  </div>
+                  {% if error %}
+                  <div class="alert alert-danger py-2" role="alert" style="font-size:14px;">
+                    {{ error }}
+                  </div>
+                  {% endif %}
+                  <form class="user" method="POST" action="/login">
+                    <div class="form-group">
+                      <input type="email" name="email" class="form-control form-control-user" id="exampleInputEmail" list="rememberedAccounts" aria-describedby="emailHelp" placeholder="请输入邮箱" value="{{ remembered_email or '' }}">
+                      <datalist id="rememberedAccounts">
+                        <!-- 动态填充已记住的账号 -->
+                      </datalist>
+                    </div>
+                    <div class="form-group">
+                      <input type="password" name="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="请输入密码" autocomplete="current-password" value="{{ remembered_password or '' }}">
+                    </div>
+                    <div class="form-group">
+                      <div class="custom-control custom-checkbox small">
+                        <input type="checkbox" class="custom-control-input" id="customCheck" name="remember" {% if remembered_email %}checked{% endif %}>
+                        <label class="custom-control-label" for="customCheck">记住我</label>
+                      </div>
+                    </div>
+                    <button class="btn btn-primary btn-user btn-block">登录</button>
+                    <hr>
+                  </form>
+                  <hr>
+                  <div class="text-center">
+                    <a class="small" href="/register">注册</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 从后端获取所有已记住的账号数据
+    const userAccounts = JSON.parse('{{ user_accounts | safe if user_accounts else "{}" }}');
+    const emailInput = document.getElementById('exampleInputEmail');
+    const pwdInput = document.getElementById('exampleInputPassword');
+    const rememberCheck = document.getElementById('customCheck');
+    const datalist = document.getElementById('rememberedAccounts');
+
+    // 填充 datalist 供用户选择
+    Object.keys(userAccounts).forEach(email => {
+      const option = document.createElement('option');
+      option.value = email;
+      datalist.appendChild(option);
+    });
+
+    // 监听邮箱输入框的变化
+    emailInput.addEventListener('input', function() {
+      const email = this.value;
+      if (userAccounts[email]) {
+        // 如果输入的邮箱在已记住的列表中，自动填充密码并勾选“记住我”
+        pwdInput.value = userAccounts[email];
+        rememberCheck.checked = true;
+      } else {
+        // 如果是新邮箱，清空密码并取消勾选
+        pwdInput.value = '';
+        rememberCheck.checked = false;
+      }
+    });
+
+    // 页面加载完成后，如果已经回填了邮箱，也要触发一次逻辑
+    window.onload = function() {
+      if (emailInput.value && userAccounts[emailInput.value]) {
+        pwdInput.value = userAccounts[emailInput.value];
+        rememberCheck.checked = true;
+      }
+    };
+  </script>
+</body>
+</html>

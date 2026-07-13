@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>惠农网数据分析系统</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-laugh-wink"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">惠农网数据<sup>2</sup></div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- 简化导航：首页/销量分析/品类分析/地域分析/自定义查询 -->
+      <li class="nav-item active">
+        <a class="nav-link" href="#" onclick="showSection('home')">
+          <i class="fas fa-fw fa-home"></i>
+          <span>首页</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showSection('sales')">
+          <i class="fas fa-fw fa-chart-bar"></i>
+          <span>销量分析</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showSection('category')">
+          <i class="fas fa-fw fa-chart-pie"></i>
+          <span>品类分析</span></a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showSection('region')">
+          <i class="fas fa-fw fa-city"></i>
+          <span>地域分析</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showSection('query')">
+          <i class="fas fa-fw fa-search"></i>
+          <span>自定义查询</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{email}}</span>
+              </a>
+              <!-- Dropdown - User Information -->
+              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  退出登录
+                </a>
+              </div>
+            </li>
+
+          </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 id="pageTitle" class="h3 mb-0 text-gray-800">首页</h1>
+          </div>
+
+          <div class="row" id="section-category-analysis" style="display:none;">
+            <div class="col-xl-6 col-lg-6">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">品类成交量</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="categorySalesCountChart" style="width:100%;height:360px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-lg-6">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">大类占比（饼图）</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-pie">
+                    <canvas id="categorySharePieChart" style="width:100%;height:360px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">价格区间分布</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="priceBucketChart" style="width:100%;height:360px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+          
+          <!-- Content Row -->
+          <div class="row" id="section-home">
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">畅销品类</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ home_data['畅销品类']['名称'] }}</div>
+                      <div class="text-xs text-gray-600">成交单数：{{ home_data['畅销品类']['总销量'] }}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">热门地区</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ home_data['最热门地区']['名称'] }}</div>
+                      <!-- 去除出现次数显示 -->
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">销量最高品种</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ home_data['销量最高品种']['名称'] }}</div>
+                      {% set _n = home_data['销量最高品种']['名称'] %}
+                      {% set _unit = '棵' if ('种子' in _n or '种苗' in _n) else '斤' %}
+                      <div class="text-xs text-gray-600">总销量：{{ home_data['销量最高品种']['总销量'] }}{{ _unit }}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">商品总数</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ home_data['商品总数（所有产品）'] }}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="section-sales">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">销量排行（大类成交量）</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="productsBarChart" style="width:100%;height:300px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+          
+          <div class="row" id="section-category">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">品类销售占比</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-pie">
+                    <canvas id="categoryPieChart" style="width:100%;height:360px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="section-region">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">地域销售分布</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="regionBarChart" style="width:100%;height:300px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">地域品类地图</h6>
+                  <div>
+                    <select id="regionMapMetric" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                      <option value="topcat">主要品类</option>
+                      <option value="sales">销量</option>
+                      <option value="amount">销售额</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="regionMapChart" style="height:420px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row" id="section-sales-heatmap" style="display:none;">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">2025年销量日历热力图</h6>
+                </div>
+                <div class="card-body">
+                  <div id="salesCalendarHeatmap" style="height: 620px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="section-sales-rank" style="display:none;">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">2025年销量二级分类排行</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="salesCategoryRankChart" style="width:100%;height:340px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row" id="section-sales-trend" style="display:none;">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">销量时间趋势</h6>
+                  <div>
+                    <label class="mr-2 text-gray-600">时间粒度</label>
+                    <select id="trendGranularity" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                      <option value="day">按天</option>
+                      <option value="week">按周</option>
+                      <option value="month">按月</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="salesTrendChart" style="width:100%;height:320px;"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" id="section-query">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">品种词云</h6>
+                </div>
+                <div class="card-body">
+                  <div id="productWordCloud" style="height: 200px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="section-adv-query" style="display:none;">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">自定义查询</h6>
+                  <div>
+                    <label class="mr-2 text-gray-600">维度</label>
+                    <select id="cqDimension" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                      <option value="time">时间</option>
+                      <option value="category">品类</option>
+                      <option value="region">地区</option>
+                      <option value="product">品种</option>
+                    </select>
+                    <label class="ml-3 mr-2 text-gray-600">图表</label>
+                    <select id="cqChartType" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                      <option value="bar">柱状</option>
+                      <option value="line">折线</option>
+                      <option value="pie">饼图</option>
+                      <option value="table">表格</option>
+                    </select>
+                    <label class="ml-3 mr-2 text-gray-600">指标</label>
+                    <select id="cqMetric" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                      <option value="sales">销量</option>
+                      <option value="amount">销售额</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="form-inline mb-3">
+                    <label class="mr-2 text-gray-600">开始</label>
+                    <input type="date" id="cqStart" class="form-control form-control-sm mr-3" min="2025-01-01" max="2025-12-31"/>
+                    <label class="mr-2 text-gray-600">结束</label>
+                    <input type="date" id="cqEnd" class="form-control form-control-sm mr-3" min="2025-01-01" max="2025-12-31"/>
+                    <label class="mr-2 text-gray-600">大类</label>
+                    <select id="cqCategory" class="form-control form-control-sm mr-3" style="min-width:120px;"></select>
+                    <label class="mr-2 text-gray-600">小类</label>
+                    <select id="cqSubcategory" class="form-control form-control-sm mr-3" style="min-width:120px;"></select>
+                    <label class="mr-2 text-gray-600">省份</label>
+                    <select id="cqProvince" class="form-control form-control-sm mr-3" style="min-width:120px;"></select>
+                    <label class="mr-2 text-gray-600">城市</label>
+                    <select id="cqCity" class="form-control form-control-sm mr-3" style="min-width:120px;"></select>
+                    <label class="mr-2 text-gray-600">品种</label>
+                    <select id="cqProduct" class="form-control form-control-sm mr-3" style="min-width:120px;"></select>
+                    <label class="mr-2 text-gray-600">价格</label>
+                    <input type="number" id="cqPmin" placeholder="最小" class="form-control form-control-sm mr-1" style="width:90px;"/>
+                    <span class="mr-1">-</span>
+                    <input type="number" id="cqPmax" placeholder="最大" class="form-control form-control-sm mr-3" style="width:90px;"/>
+                    <button id="cqApply" class="btn btn-sm btn-primary">应用查询</button>
+                  </div>
+                  <div id="customQueryChart" style="height:420px;"></div>
+                  <div id="customQueryTable" class="table-responsive mt-3" style="display:none;">
+                    <table class="table table-bordered table-sm mb-0">
+                      <thead><tr id="cqTableHead"></tr></thead>
+                      <tbody id="cqTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="section-empty" style="display:none;">
+            <div class="col-xl-12 col-lg-12">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary" id="emptyTitle">当前分类</h6>
+                </div>
+                <div class="card-body">
+                  <div class="text-gray-600">此分类暂不展示可视化图表。首页仅用于图表展示。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Content Row -->
+
+
+
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; 2020.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">确认退出</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">确定要退出当前账号吗？</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+          <a class="btn btn-primary" href="/logout">退出</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/static/js/sb-admin-2.min.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="/static/vendor/chart.js/Chart.min.js"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2/dist/echarts-wordcloud.min.js"></script>
+  <script src="/static/js/demo/products-bar.js"></script>
+  <script src="/static/js/demo/category-pie.js"></script>
+  <script src="/static/js/demo/region-bar.js"></script>
+  <script src="/static/js/demo/region-map.js"></script>
+  <script src="/static/js/demo/product-wordcloud.js"></script>
+  <script src="/static/js/demo/calendar-heatmap.js"></script>
+  <script src="/static/js/demo/sales-category-rank.js"></script>
+  <script src="/static/js/demo/sales-trend.js"></script>
+  <script src="/static/js/demo/category-sales-count.js"></script>
+  <script src="/static/js/demo/category-share-pie.js"></script>
+  <script src="/static/js/demo/custom-query.js"></script>
+  <script src="/static/js/demo/price-buckets.js"></script>
+  <script>
+    function showSection(key) {
+      var ids = ['section-home','section-sales','section-category','section-category-analysis','section-region','section-query','section-adv-query','section-empty','section-sales-heatmap','section-sales-rank','section-sales-trend'];
+      ids.forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (key === 'home') {
+          // 首页展示既有图表 + 词云；不显示地域分区、分析页专属分区和自定义查询分区
+          if (id === 'section-empty' || id === 'section-sales-heatmap' || id === 'section-sales-rank' || id === 'section-sales-trend' || id === 'section-category-analysis' || id === 'section-region' || id === 'section-adv-query') el.style.display = 'none';
+          else el.style.display = '';
+        } else {
+          // 销量分析显示热力图/排行/趋势
+          if (key === 'sales') {
+            el.style.display = (id === 'section-sales-heatmap' || id === 'section-sales-rank' || id === 'section-sales-trend') ? '' : 'none';
+          } else if (key === 'category') {
+            // 品类分析仅显示说明
+            el.style.display = (id === 'section-category-analysis') ? '' : 'none';
+          } else if (key === 'region') {
+            // 地域分析只显示地域分区
+            el.style.display = (id === 'section-region') ? '' : 'none';
+          } else {
+          // 自定义查询：显示自定义查询分区（不在首页展示）
+          if (key === 'query') {
+            el.style.display = (id === 'section-adv-query') ? '' : 'none';
+          } else if (id === 'section-empty') {
+              el.style.display = '';
+              var title = {
+                region: '地域分析',
+                query: '自定义查询'
+              }[key] || '当前分类';
+              var tEl = document.getElementById('emptyTitle');
+              if (tEl) tEl.textContent = title;
+            } else {
+              el.style.display = 'none';
+            }
+          }
+        }
+      });
+      if (typeof loadProductWordCloud === 'function' && key === 'home') {
+        // 确保在显示词云分区后重新初始化，避免隐藏状态下初始化宽高为0
+        setTimeout(function(){ loadProductWordCloud(); }, 0);
+      }
+      if (typeof loadCalendarHeatmap === 'function' && key === 'sales') {
+        setTimeout(function(){ loadCalendarHeatmap(); }, 0);
+      }
+      if (typeof initRegionMap === 'function' && key === 'region') {
+        setTimeout(function(){ initRegionMap(); }, 0);
+      }
+      if (typeof initCustomQuery === 'function' && key === 'query') {
+        setTimeout(function(){ initCustomQuery(); }, 0);
+      }
+      if (typeof loadSalesCategoryRank === 'function' && key === 'sales') {
+        setTimeout(function(){ loadSalesCategoryRank(); }, 0);
+      }
+      if (typeof initSalesTrend === 'function' && key === 'sales') {
+        setTimeout(function(){ initSalesTrend(); }, 0);
+      }
+      if (typeof loadCategorySalesCount === 'function' && key === 'category') {
+        setTimeout(function(){ loadCategorySalesCount(); }, 0);
+      }
+      if (typeof loadCategorySharePie === 'function' && key === 'category') {
+        setTimeout(function(){ loadCategorySharePie(); }, 0);
+      }
+      if (typeof loadPriceBuckets === 'function' && key === 'category') {
+        setTimeout(function(){ loadPriceBuckets(); }, 0);
+      }
+      // 类别分析不再加载三张图表
+      // 品类分析不加载任何图表
+      var navs = document.querySelectorAll('#accordionSidebar .nav-item');
+      navs.forEach(function(li){
+        li.classList.remove('active');
+      });
+      var map = {home:0, sales:1, category:2, region:3, query:4};
+      var idx = map[key];
+      var navItems = document.querySelectorAll('#accordionSidebar .nav-item');
+      if (navItems[idx]) navItems[idx].classList.add('active');
+      var titleMap = { home: '首页', sales: '销量分析', category: '品类分析', region: '地域分析', query: '自定义查询' };
+      var t = document.getElementById('pageTitle');
+      if (t) t.textContent = titleMap[key] || '首页';
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      showSection('home');
+    });
+  </script>
+
+</body>
+
+</html>
